@@ -71,6 +71,8 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             min-height: 3.5rem;
             display: inline-block;
+            border-right: 2px solid var(--accent);
+            padding-right: 5px;
         }
         
         h2 {
@@ -293,7 +295,7 @@
     <div class="celebration" id="celebration"></div>
     
     <div class="container">
-        <div class="invitation-card">
+        <div class="invitation-card" id="invitation-card">
             <div class="header">
                 <div class="name-typing" id="name-typing"></div>
                 <p class="animate__animated animate__fadeIn">INVITES YOU FOR</p>
@@ -331,7 +333,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/RecordRTC/5.6.2/RecordRTC.min.js"></script>
     <script>
         // Faster typing animation
         const phrases = [
@@ -371,7 +372,7 @@
             setTimeout(typeText, isEnd ? 800 : speed);
         }
         
-        // Name typing animation
+        // Continuous name typing animation
         function typeName() {
             const fullName = "WELDON KIPKURUI LANGAT";
             let nameIndex = 0;
@@ -381,8 +382,16 @@
                 if (nameIndex < fullName.length) {
                     nameElement.textContent = fullName.substring(0, nameIndex + 1);
                     nameIndex++;
-                    setTimeout(type, 100); // Faster name typing
+                } else {
+                    // Reset and start again
+                    nameIndex = 0;
+                    setTimeout(() => {
+                        nameElement.textContent = '';
+                        setTimeout(type, 500);
+                    }, 1000);
+                    return;
                 }
+                setTimeout(type, 100); // Faster name typing
             }
             
             setTimeout(type, 1000); // Start after 1 second
@@ -438,56 +447,61 @@
             }
         }
         
-        // Video recording and download functionality
+        // Improved video capture using screenshots
         async function captureVideo() {
-            const card = document.querySelector('.invitation-card');
+            const card = document.getElementById('invitation-card');
             const downloadBtn = document.getElementById('download-btn');
             
             downloadBtn.innerHTML = '<i>⏳</i> Preparing video...';
             downloadBtn.disabled = true;
             
             try {
-                // Create a stream from the card
-                const canvas = await html2canvas(card);
-                const stream = canvas.captureStream(25); // 25 FPS
+                // Create a canvas for each frame
+                const frames = [];
+                const duration = 10; // seconds
+                const fps = 15;
+                const totalFrames = duration * fps;
                 
-                const recorder = new RecordRTC(stream, {
-                    type: 'video',
-                    mimeType: 'video/webm',
-                    timeSlice: 1000, // 1 second intervals
-                    ondataavailable: function(blob) {
-                        // Not needed for our case
-                    }
+                // Capture frames
+                for (let i = 0; i < totalFrames; i++) {
+                    const canvas = await html2canvas(card);
+                    frames.push(canvas.toDataURL('image/jpeg', 0.8));
+                    await new Promise(resolve => setTimeout(resolve, 1000/fps));
+                }
+                
+                // Create download link for frames (as zip)
+                const zip = new JSZip();
+                const imgFolder = zip.folder("frames");
+                
+                frames.forEach((frame, index) => {
+                    const base64Data = frame.replace(/^data:image\/(png|jpeg);base64,/, "");
+                    imgFolder.file(`frame${index.toString().padStart(4, '0')}.jpg`, base64Data, {base64: true});
                 });
                 
-                // Start recording
-                recorder.startRecording();
+                // Generate zip file
+                const content = await zip.generateAsync({type: "blob"});
+                const url = URL.createObjectURL(content);
                 
-                // Record for 15 seconds (showing all animations)
-                setTimeout(async () => {
-                    recorder.stopRecording(async () => {
-                        const blob = recorder.getBlob();
-                        const url = URL.createObjectURL(blob);
-                        
-                        // Create download link
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'Weldon-Graduation-Invite.webm';
-                        document.body.appendChild(a);
-                        a.click();
-                        
-                        // Clean up
-                        setTimeout(() => {
-                            URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                        }, 100);
-                        
-                        downloadBtn.innerHTML = '<i>⬇️</i> Download Video Invite';
-                        downloadBtn.disabled = false;
-                    });
-                }, 15000); // 15 second recording
+                // Create download link
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Weldon-Graduation-Frames.zip';
+                document.body.appendChild(a);
+                a.click();
+                
+                // Clean up
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }, 100);
+                
+                downloadBtn.innerHTML = '<i>⬇️</i> Download Video Frames';
+                downloadBtn.disabled = false;
+                
+                alert("Video frames captured successfully! You can compile these into a video using any video editor.");
+                
             } catch (error) {
-                console.error('Error capturing video:', error);
+                console.error('Error capturing frames:', error);
                 downloadBtn.innerHTML = '<i>❌</i> Error - Try Again';
                 setTimeout(() => {
                     downloadBtn.innerHTML = '<i>⬇️</i> Download Video Invite';
@@ -496,8 +510,19 @@
             }
         }
         
+        // Load JSZip dynamically
+        function loadJSZip() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+        
         // Start animations when page loads
-        window.addEventListener('load', function() {
+        window.addEventListener('load', async function() {
             createBalloons();
             createConfetti();
             typeName();
@@ -516,7 +541,10 @@
             });
             
             // Setup video download button
-            document.getElementById('download-btn').addEventListener('click', captureVideo);
+            document.getElementById('download-btn').addEventListener('click', async function() {
+                await loadJSZip();
+                captureVideo();
+            });
         });
     </script>
 </body>

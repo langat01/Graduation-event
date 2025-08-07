@@ -32,6 +32,7 @@
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(2px);
+            overflow-x: hidden;
         }
         
         .container {
@@ -51,6 +52,7 @@
             text-align: center;
             position: relative;
             animation: fadeIn 1.5s ease-out;
+            transition: all 0.3s ease;
         }
         
         .header {
@@ -148,6 +150,53 @@
             animation: fadeIn 3s ease-out;
         }
         
+        /* Typing animation */
+        .typing-container {
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .typing-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            border-right: 2px solid var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        /* Celebration elements */
+        .celebration {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            border-radius: 50%;
+            animation: floatUp 10s infinite ease-in;
+        }
+        
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            width: 2px;
+            height: 15px;
+            background: rgba(0,0,0,0.2);
+            transform: translateX(-50%);
+        }
+        
         /* Custom animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -163,6 +212,21 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+        
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blinkCursor {
+            from { border-right-color: var(--accent); }
+            to { border-right-color: transparent; }
         }
         
         .confetti {
@@ -185,10 +249,16 @@
             .content {
                 padding: 2rem 1rem;
             }
+            
+            .typing-text {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="celebration" id="celebration"></div>
+    
     <div class="container">
         <div class="invitation-card">
             <div class="header">
@@ -199,7 +269,10 @@
             <div class="content">
                 <h2>GRADUATION CEREMONY</h2>
                 
-                <p>Join us for a day of joy and success as I graduate with a</p>
+                <div class="typing-container">
+                    <div class="typing-text" id="typing-text"></div>
+                </div>
+                
                 <p class="highlight">Bachelor's Degree in Applied Statistics with Programming!</p>
                 
                 <p>Your presence would mean the world to me</p>
@@ -218,6 +291,64 @@
     </div>
 
     <script>
+        // Typing animation
+        const phrases = [
+            "Join us for a day of joy and success!",
+            "Celebrating academic achievement!",
+            "Honoring years of hard work!",
+            "A milestone worth celebrating!"
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let isEnd = false;
+        
+        function typeText() {
+            const currentPhrase = phrases[phraseIndex];
+            const typingElement = document.getElementById('typing-text');
+            
+            if (isDeleting) {
+                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isEnd = true;
+                setTimeout(() => {
+                    isDeleting = true;
+                }, 1500);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+            
+            const speed = isDeleting ? 50 : 100;
+            setTimeout(typeText, isEnd ? 1000 : speed);
+        }
+        
+        // Create celebration balloons
+        function createBalloons() {
+            const colors = ['#f1c40f', '#e74c3c', '#2ecc71', '#3498db', '#9b59b6'];
+            const celebration = document.getElementById('celebration');
+            
+            for (let i = 0; i < 15; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.animationDuration = Math.random() * 10 + 10 + 's';
+                balloon.style.animationDelay = Math.random() * 5 + 's';
+                balloon.style.opacity = Math.random() * 0.5 + 0.5;
+                balloon.style.width = Math.random() * 20 + 20 + 'px';
+                balloon.style.height = Math.random() * 20 + 30 + 'px';
+                
+                celebration.appendChild(balloon);
+            }
+        }
+        
         // Create confetti effect
         function createConfetti() {
             const colors = ['#f1c40f', '#e74c3c', '#2ecc71', '#3498db'];
@@ -250,7 +381,9 @@
         
         // Start animations when page loads
         window.addEventListener('load', function() {
+            createBalloons();
             createConfetti();
+            typeText();
             
             // Add hover effect to card
             const card = document.querySelector('.invitation-card');

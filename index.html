@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weldon's Graduation </title>
+    <title>Weldon's Graduation Celebration</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
@@ -123,9 +123,31 @@
             transition: all 0.3s ease;
         }
         
-        .date-time:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-item {
+            background: rgba(44, 62, 80, 0.8);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            min-width: 80px;
+        }
+        
+        .countdown-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .countdown-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            opacity: 0.8;
         }
         
         .date, .time, .location {
@@ -200,38 +222,6 @@
             transform: translateX(-50%);
         }
         
-        /* Video download section */
-        .video-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background: rgba(255,255,255,0.3);
-            border-radius: 8px;
-        }
-        
-        .download-btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 50px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 1rem;
-        }
-        
-        .download-btn:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .download-btn i {
-            margin-right: 8px;
-        }
-        
         /* Custom animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -288,6 +278,19 @@
             .typing-text {
                 font-size: 1rem;
             }
+            
+            .countdown {
+                gap: 0.5rem;
+            }
+            
+            .countdown-item {
+                min-width: 70px;
+                padding: 0.8rem;
+            }
+            
+            .countdown-number {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -295,7 +298,7 @@
     <div class="celebration" id="celebration"></div>
     
     <div class="container">
-        <div class="invitation-card" id="invitation-card">
+        <div class="invitation-card">
             <div class="header">
                 <div class="name-typing" id="name-typing"></div>
                 <p class="animate__animated animate__fadeIn">INVITES YOU FOR</p>
@@ -312,17 +315,29 @@
                 
                 <p>Your presence would mean the world to me</p>
                 
+                <div class="countdown" id="countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="days">14</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="hours">00</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="minutes">00</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-number" id="seconds">00</div>
+                        <div class="countdown-label">Seconds</div>
+                    </div>
+                </div>
+                
                 <div class="date-time animate__animated animate__pulse animate__delay-1s">
                     <div class="date">22 August, 2025</div>
                     <div class="time">AT 09:00 AM</div>
                     <div class="location">Murang'a University Of Technology, Kenya</div>
-                </div>
-                
-                <div class="video-section">
-                    <p>Download a video version to share:</p>
-                    <button class="download-btn" id="download-btn">
-                        <i>⬇️</i> Download Video Invite
-                    </button>
                 </div>
                 
                 <div class="footer">
@@ -332,8 +347,35 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        // Countdown timer (starting from 14 days)
+        function updateCountdown() {
+            // Set the target date (August 22, 2025 at 09:00 AM)
+            const targetDate = new Date('August 22, 2025 09:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            // If the target date is in the future
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // If the event has passed
+                document.getElementById('countdown').innerHTML = '<div class="highlight">The graduation has arrived!</div>';
+            }
+        }
+        
+        // Update countdown every second
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
+        
         // Faster typing animation
         const phrases = [
             "Join us for a day of joy and success!",
@@ -447,82 +489,8 @@
             }
         }
         
-        // Improved video capture using screenshots
-        async function captureVideo() {
-            const card = document.getElementById('invitation-card');
-            const downloadBtn = document.getElementById('download-btn');
-            
-            downloadBtn.innerHTML = '<i>⏳</i> Preparing video...';
-            downloadBtn.disabled = true;
-            
-            try {
-                // Create a canvas for each frame
-                const frames = [];
-                const duration = 10; // seconds
-                const fps = 15;
-                const totalFrames = duration * fps;
-                
-                // Capture frames
-                for (let i = 0; i < totalFrames; i++) {
-                    const canvas = await html2canvas(card);
-                    frames.push(canvas.toDataURL('image/jpeg', 0.8));
-                    await new Promise(resolve => setTimeout(resolve, 1000/fps));
-                }
-                
-                // Create download link for frames (as zip)
-                const zip = new JSZip();
-                const imgFolder = zip.folder("frames");
-                
-                frames.forEach((frame, index) => {
-                    const base64Data = frame.replace(/^data:image\/(png|jpeg);base64,/, "");
-                    imgFolder.file(`frame${index.toString().padStart(4, '0')}.jpg`, base64Data, {base64: true});
-                });
-                
-                // Generate zip file
-                const content = await zip.generateAsync({type: "blob"});
-                const url = URL.createObjectURL(content);
-                
-                // Create download link
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'Weldon-Graduation-Frames.zip';
-                document.body.appendChild(a);
-                a.click();
-                
-                // Clean up
-                setTimeout(() => {
-                    URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                }, 100);
-                
-                downloadBtn.innerHTML = '<i>⬇️</i> Download Video Frames';
-                downloadBtn.disabled = false;
-                
-                alert("Video frames captured successfully! You can compile these into a video using any video editor.");
-                
-            } catch (error) {
-                console.error('Error capturing frames:', error);
-                downloadBtn.innerHTML = '<i>❌</i> Error - Try Again';
-                setTimeout(() => {
-                    downloadBtn.innerHTML = '<i>⬇️</i> Download Video Invite';
-                    downloadBtn.disabled = false;
-                }, 2000);
-            }
-        }
-        
-        // Load JSZip dynamically
-        function loadJSZip() {
-            return new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-                script.onload = resolve;
-                script.onerror = reject;
-                document.head.appendChild(script);
-            });
-        }
-        
         // Start animations when page loads
-        window.addEventListener('load', async function() {
+        window.addEventListener('load', function() {
             createBalloons();
             createConfetti();
             typeName();
@@ -538,12 +506,6 @@
             card.addEventListener('mouseleave', () => {
                 card.style.transform = 'translateY(0)';
                 card.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.37)';
-            });
-            
-            // Setup video download button
-            document.getElementById('download-btn').addEventListener('click', async function() {
-                await loadJSZip();
-                captureVideo();
             });
         });
     </script>

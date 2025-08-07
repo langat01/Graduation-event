@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weldon's Graduation Celebration</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --accent: #f1c40f;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f9f9f9;
+            color: var(--primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .invitation-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), #34495e);
+            color: white;
+            padding: 3rem 2rem;
+            position: relative;
+        }
+        
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: white;
+            transform: skewY(-3deg);
+            z-index: 1;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            margin: 1.5rem 0;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            right: 25%;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .content {
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .date-time {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .date, .time, .location {
+            font-size: 1.3rem;
+            margin: 0.5rem 0;
+        }
+        
+        .date {
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .time {
+            font-weight: 600;
+        }
+        
+        .location {
+            font-style: italic;
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .content {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="invitation-card">
+            <div class="header">
+                <h1>WELDON KIPKURUI LANGAT</h1>
+                <p>INVITES YOU FOR</p>
+            </div>
+            
+            <div class="content">
+                <h2>GRADUATION CEREMONY</h2>
+                
+                <p>Join us for a day of joy and success as I graduate with a</p>
+                <p class="highlight">Bachelor's Degree in Applied Statistics with Programming!</p>
+                
+                <p>Your presence would mean the world to me</p>
+                
+                <div class="date-time">
+                    <div class="date">22 August, 2025</div>
+                    <div class="time">AT 09:00 AM</div>
+                    <div class="location">Murang'a University Of Technology, Kenya</div>
+                </div>
+                
+                <div class="footer">
+                    Looking forward to celebrating this milestone with you!
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
